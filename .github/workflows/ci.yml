@@ -1,41 +1,59 @@
-name: Rails CI/CD  # Workflow name
+name: Rails CI/CD
 
-on: 
-  push:            # Trigger on push event to the main branch
-    branches: 
+on:
+  push:
+    branches:
       - main
 
 jobs:
-  test:            # Job to run tests
-    runs-on: ubuntu-latest  # Use Ubuntu as the OS
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: my_test_db
+        ports:
+          - "5432:5432"
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Fetch the code from GitHub
+        uses: actions/checkout@v3
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7.7'  # Specify the Ruby version
-          bundler-cache: true   # Cache gems for faster installs
+          ruby-version: '2.7.7'  # Use a stable version
+          bundler-cache: true
 
       - name: Install dependencies
-        run: bundle install  # Install gems
+        run: bundle install
+
+      - name: Setup database
+        run: |
+         # cp config/database.yml.ci config/database.yml
+         # bundle exec rails db:setup
 
       - name: Run tests
-        run: bundle exec rspec  # Run RSpec tests
+        run: bundle exec rspec
 
-  deploy:          # Job to deploy the app
-    needs: test    # Run only if "test" job is successful
-    runs-on: ubuntu-latest  
+      - name: Run Rubocop
+        run: bundle exec rubocop --parallel
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  
+        uses: actions/checkout@v3
 
       - name: Deploy to Heroku
         env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}  # Fetch secret key from GitHub
-          HEROKU_APP_NAME: "your-heroku-app-name"        # Replace with your Heroku app name
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
         run: |
-          # git remote add heroku https://git.heroku.com/$HEROKU_APP_NAME.git
+          # git remote add heroku https://git.heroku.com/$HEROKU_APP_NAME.git || true
           # git push heroku main
 

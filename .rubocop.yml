@@ -1,0 +1,9 @@
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Style/Documentation:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "config/environments/*.rb" # Exclude all environment files
+  Max: 50  # Increase the limit (adjust as needed)
