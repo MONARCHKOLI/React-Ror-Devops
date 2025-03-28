@@ -1,0 +1,41 @@
+name: Rails CI/CD  # Workflow name
+
+on: 
+  push:            # Trigger on push event to the main branch
+    branches: 
+      - main
+
+jobs:
+  test:            # Job to run tests
+    runs-on: ubuntu-latest  # Use Ubuntu as the OS
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # Fetch the code from GitHub
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7.7'  # Specify the Ruby version
+          bundler-cache: true   # Cache gems for faster installs
+
+      - name: Install dependencies
+        run: bundle install  # Install gems
+
+      - name: Run tests
+        run: bundle exec rspec  # Run RSpec tests
+
+  deploy:          # Job to deploy the app
+    needs: test    # Run only if "test" job is successful
+    runs-on: ubuntu-latest  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}  # Fetch secret key from GitHub
+          HEROKU_APP_NAME: "your-heroku-app-name"        # Replace with your Heroku app name
+        run: |
+          # git remote add heroku https://git.heroku.com/$HEROKU_APP_NAME.git
+          # git push heroku main
+
