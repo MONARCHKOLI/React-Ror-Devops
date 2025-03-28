@@ -4,11 +4,12 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: <%= ENV["POSTGRES_USER"] || "myuser" %>
   password: <%= ENV["POSTGRES_PASSWORD"] || "mypassword" %>
-  host: <%= ENV["DATABASE_HOST"] || "db" %>
+  host: localhost
 
 development:
   <<: *default
   database: myapp_development
+  host: localhost
 
 test:
   <<: *default

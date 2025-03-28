@@ -77,3 +77,7 @@ group :test do
 end
 
 gem 'rspec-rails', '~> 7.1'
+
+gem 'react-rails', '~> 3.2'
+
+gem 'jsbundling-rails', '~> 1.3'
