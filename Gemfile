@@ -20,6 +20,7 @@ gem 'puma', '>= 5.0'
 gem 'importmap-rails'
 
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem 'pg'
 gem 'turbo-rails'
 
 gem 'rubocop-capybara'
